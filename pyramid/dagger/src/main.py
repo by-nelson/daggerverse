@@ -2,14 +2,14 @@
 
 import dagger
 
-from dagger import dag, field, function, object_type
-from typping import Self, Annotated
+from dagger import Doc, dag, field, function, object_type
+from typing import Self, Annotated
 
 @object_type
 class Pyramid:
     """Python test and build related functions."""
 
-    ctr: dagger.Container = field(default=(lambda: dag.Contaijer()))
+    ctr: dagger.Container = field(default=(lambda: dag.container()))
 
     @function
     def with_version(
@@ -18,10 +18,7 @@ class Pyramid:
     ) -> Self:
         """Initialize container with a given python version."""
 
-        if not self.ctr:
-            self.ctr = dag.Container()
-        
-        self.ctr.From_("python:" + version)
+        self.ctr = self.ctr.from_("python:" + version)
         return self
 
     @function
@@ -30,9 +27,9 @@ class Pyramid:
         return self.ctr
 
     @function
-    async def get_version(self) -> str:
+    def get_version(self) -> str:
         """Get the version created by Pyramid."""
-        return await (
-            self.ctr.with_exec(["python", "--version"])
+        return (
+            self.ctr.with_exec(["python3", "--version"])
             .stdout()
         )
